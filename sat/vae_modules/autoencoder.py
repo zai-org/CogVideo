@@ -149,7 +149,7 @@ class AutoencodingEngine(AbstractAutoencoder):
             )
             assert len(self.ae_optimizer_args) == len(self.trainable_ae_params)
         else:
-            self.ae_optimizer_args = [{}]  # makes type consitent
+            self.ae_optimizer_args = [{}]  # makes type consistent
 
         self.trainable_disc_params = trainable_disc_params
         if self.trainable_disc_params is not None:
@@ -159,11 +159,11 @@ class AutoencodingEngine(AbstractAutoencoder):
             )
             assert len(self.disc_optimizer_args) == len(self.trainable_disc_params)
         else:
-            self.disc_optimizer_args = [{}]  # makes type consitent
+            self.disc_optimizer_args = [{}]  # makes type consistent
 
         if ckpt_path is not None:
             assert ckpt_engine is None, "Can't set ckpt_engine and ckpt_path"
-            logpy.warn("Checkpoint path is deprecated, use `checkpoint_egnine` instead")
+            logpy.warning("Checkpoint path is deprecated, use `checkpoint_egnine` instead")
         self.apply_ckpt(default(ckpt_path, ckpt_engine))
         self.additional_decode_keys = set(default(additional_decode_keys, []))
 
@@ -352,7 +352,7 @@ class AutoencodingEngine(AbstractAutoencoder):
                         pattern_params.append(param)
                         num_params += param.numel()
                 if len(pattern_params) == 0:
-                    logpy.warn(f"Did not find parameters for pattern {pattern_}")
+                    logpy.warning(f"Did not find parameters for pattern {pattern_}")
                 params.extend(pattern_params)
             groups.append({"params": params, **args})
         return groups, num_params
