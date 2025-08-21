@@ -12,7 +12,12 @@ class Args(BaseModel):
     model_path: Path
     model_name: str
     model_type: Literal["i2v", "t2v"]
-    training_type: Literal["lora", "sft"] = "lora"
+    training_type: Literal["lora", "sft", "kd"] = "lora"
+
+    ########## KD ##########
+    teacher_model_path: Path | None = None
+    teacher_model_num_classes: int | None = None
+    kd_loss_weight: float = 0.1
 
     ########## Output ##########
     output_dir: Path = Path("train_results/{:%Y-%m-%d-%H-%M-%S}".format(datetime.datetime.now()))
@@ -239,6 +244,11 @@ class Args(BaseModel):
         # Validation
         parser.add_argument("--do_validation", type=lambda x: x.lower() == 'true', default=False)
         parser.add_argument("--validation_steps", type=int, default=None)
+
+        # KD parameters
+        parser.add_argument("--teacher_model_path", type=str, default=None)
+        parser.add_argument("--teacher_model_num_classes", type=int, default=None)
+        parser.add_argument("--kd_loss_weight", type=float, default=0.1)
         parser.add_argument("--validation_dir", type=str, default=None)
         parser.add_argument("--validation_prompts", type=str, default=None)
         parser.add_argument("--validation_images", type=str, default=None)
