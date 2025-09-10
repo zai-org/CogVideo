@@ -6,7 +6,7 @@ from finetune.trainer import Trainer
 SUPPORTED_MODELS: Dict[str, Dict[str, Trainer]] = {}
 
 
-def register(model_name: str, training_type: Literal["lora", "sft"], trainer_cls: Trainer):
+def register(model_name: str, training_type: Literal["lora", "sft", "kd"], trainer_cls: Trainer):
     """Register a model and its associated functions for a specific training type.
 
     Args:
