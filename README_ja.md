@@ -293,8 +293,8 @@ pipe.vae.enable_tiling()
 
 コミュニティからの貢献を大歓迎し、私たちもオープンソースコミュニティに積極的に貢献しています。以下の作品はすでにCogVideoXに対応しており、ぜひご利用ください：
 
-+ [LeMiCa](https://unicomai.github.io/LeMiCa/)：トレーニング不要で効率的な拡散型動画生成の加速フレームワークであり、生成されたフレーム間の全体的な内容とスタイルの一貫性を大幅に向上させます。
-+ [RIFLEx-CogVideoX](https://github.com/thu-ml/RIFLEx)：
++ [LeMiCa](https://unicomai.github.io/LeMiCa/): 中国聯通データサイエンス・人工知能研究所が開発した拡散モデル推論加速ソリューション。LeMiCaは、キャッシュベースの技術とグローバルノイズ除去パス最適化を活用することで、CogVideoXの効率的な推論サポートを提供し、視覚的な一貫性と品質を維持しながら、約2.5倍のロスレス加速を実現します。
++ [RIFLEx-CogVideoX](https://github.com/thu-ml/RIFLEx):
   RIFLExは動画の長さを外挿する手法で、たった1行のコードで動画の長さを元の2倍に延長できます。RIFLExはトレーニング不要の推論をサポートするだけでなく、CogVideoXをベースにファインチューニングしたモデルも提供しています。元の長さの動画でわずか1000ステップのファインチューニングを行うだけで、長さ外挿能力を大幅に向上させることができます。
 + [CogVideoX-Fun](https://github.com/aigc-apps/CogVideoX-Fun):
   CogVideoX-Funは、CogVideoXアーキテクチャを基にした改良パイプラインで、自由な解像度と複数の起動方法をサポートしています。
