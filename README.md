@@ -306,6 +306,7 @@ pipe.vae.enable_tiling()
 We highly welcome contributions from the community and actively contribute to the open-source community. The following
 works have already been adapted for CogVideoX, and we invite everyone to use them:
 
++ [LeMiCa](https://unicomai.github.io/LeMiCa/): a training-free and efficient acceleration framework for diffusion-based video generation,  substantially improves the consistency of global content and style across generated frame.
 + [RIFLEx-CogVideoX](https://github.com/thu-ml/RIFLEx)：
   RIFLEx extends the video with just one line of code: `freq[k-1]=(2np.pi)/(Ls)`. The framework not only supports training-free inference, but also offers models fine-tuned based on CogVideoX. By fine-tuning the model for just 1,000 steps on original-length videos, RIFLEx significantly enhances its length extrapolation capability.
 + [CogVideoX-Fun](https://github.com/aigc-apps/CogVideoX-Fun): CogVideoX-Fun is a modified pipeline based on the

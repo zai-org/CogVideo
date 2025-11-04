@@ -293,6 +293,7 @@ pipe.vae.enable_tiling()
 
 コミュニティからの貢献を大歓迎し、私たちもオープンソースコミュニティに積極的に貢献しています。以下の作品はすでにCogVideoXに対応しており、ぜひご利用ください：
 
++ [LeMiCa](https://unicomai.github.io/LeMiCa/)：トレーニング不要で効率的な拡散型動画生成の加速フレームワークであり、生成されたフレーム間の全体的な内容とスタイルの一貫性を大幅に向上させます。
 + [RIFLEx-CogVideoX](https://github.com/thu-ml/RIFLEx)：
   RIFLExは動画の長さを外挿する手法で、たった1行のコードで動画の長さを元の2倍に延長できます。RIFLExはトレーニング不要の推論をサポートするだけでなく、CogVideoXをベースにファインチューニングしたモデルも提供しています。元の長さの動画でわずか1000ステップのファインチューニングを行うだけで、長さ外挿能力を大幅に向上させることができます。
 + [CogVideoX-Fun](https://github.com/aigc-apps/CogVideoX-Fun):
