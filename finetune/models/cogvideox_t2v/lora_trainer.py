@@ -109,7 +109,7 @@ class CogVideoXT2VLoraTrainer(Trainer):
 
         patch_size_t = self.state.transformer_config.patch_size_t
         if patch_size_t is not None:
-            ncopy = latent.shape[2] % patch_size_t
+            ncopy = (patch_size_t - latent.shape[2] % patch_size_t) % patch_size_t
             # Copy the first frame ncopy times to match patch_size_t
             first_frame = latent[:, :, :1, :, :]  # Get first frame [B, C, 1, H, W]
             latent = torch.cat([first_frame.repeat(1, 1, ncopy, 1, 1), latent], dim=2)
