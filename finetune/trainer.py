@@ -588,9 +588,9 @@ class Trainer:
                 "image": {"type": "image", "value": image},
                 "video": {"type": "video", "value": video},
             }
-            for i, (artifact_type, artifact_value) in enumerate(validation_artifacts):
+            for artifact_idx, (artifact_type, artifact_value) in enumerate(validation_artifacts):
                 artifacts.update(
-                    {f"artifact_{i}": {"type": artifact_type, "value": artifact_value}}
+                    {f"artifact_{artifact_idx}": {"type": artifact_type, "value": artifact_value}}
                 )
             logger.debug(
                 f"Validation artifacts on process {accelerator.process_index}: {list(artifacts.keys())}",
