@@ -14,12 +14,35 @@ Run the script for **text-to-video**:
 
 Run the script for **image-to-video**:
     $ python convert_demo.py --prompt "the cat is running" --type "i2v" --image_path "/path/to/your/image.jpg"
+
+### Using MiniMax as the LLM provider:
+    $ MINIMAX_API_KEY=your_minimax_api_key python convert_demo.py --prompt "A girl riding a bike." --type "t2v"
+
+### Using OpenAI or any OpenAI-compatible provider:
+    $ OPENAI_API_KEY=your_openai_api_key OPENAI_BASE_URL=https://api.openai.com/v1 python convert_demo.py --prompt "A girl riding a bike." --type "t2v"
 """
 
 import argparse
+import os
 from openai import OpenAI, AzureOpenAI
 import base64
 from mimetypes import guess_type
+
+
+def _get_llm_client():
+    """
+    Return (client, model_name) based on environment variables.
+
+    Priority:
+      1. MINIMAX_API_KEY → MiniMax (OpenAI-compatible, https://api.minimax.io/v1)
+      2. OPENAI_API_KEY  → OpenAI or any OpenAI-compatible provider via OPENAI_BASE_URL
+    """
+    minimax_api_key = os.environ.get("MINIMAX_API_KEY")
+    if minimax_api_key:
+        base_url = os.environ.get("MINIMAX_BASE_URL", "https://api.minimax.io/v1")
+        client = OpenAI(api_key=minimax_api_key, base_url=base_url)
+        return client, "MiniMax-M2.7"
+    return OpenAI(), "glm-4-plus"
 
 sys_prompt_t2v = """You are part of a team of bots that creates videos. You work with an assistant bot that will draw anything you say in square brackets.
 
@@ -61,16 +84,16 @@ def image_to_url(image_path):
 
 def convert_prompt(prompt: str, retry_times: int = 3, type: str = "t2v", image_path: str = None):
     """
-    Convert a prompt to a format that can be used by the model for inference
-    """
+    Convert a prompt to a format that can be used by the model for inference.
 
-    client = OpenAI()
-    ## If you using with Azure OpenAI, please uncomment the below line and comment the above line
-    # client = AzureOpenAI(
-    #     api_key="",
-    #     api_version="",
-    #     azure_endpoint=""
-    # )
+    LLM provider is selected automatically from environment variables:
+      - MINIMAX_API_KEY → MiniMax (MiniMax-M2.7)
+      - OPENAI_API_KEY  → OpenAI or any OpenAI-compatible provider
+    """
+    client, default_model = _get_llm_client()
+    ## To use Azure OpenAI instead, replace the line above with:
+    # client = AzureOpenAI(api_key="", api_version="", azure_endpoint="")
+    # default_model = "gpt-4o"
 
     text = prompt.strip()
     for i in range(retry_times):
@@ -107,7 +130,7 @@ def convert_prompt(prompt: str, retry_times: int = 3, type: str = "t2v", image_p
                         "content": f'Create an imaginative video descriptive caption or modify an earlier caption in ENGLISH for the user input: " {text} "',
                     },
                 ],
-                model="glm-4-plus",  # glm-4-plus and gpt-4o have be tested
+                model=default_model,
                 temperature=0.01,
                 top_p=0.7,
                 stream=False,
@@ -115,7 +138,7 @@ def convert_prompt(prompt: str, retry_times: int = 3, type: str = "t2v", image_p
             )
         else:
             response = client.chat.completions.create(
-                model="gpt-4o",
+                model=default_model,
                 messages=[
                     {"role": "system", "content": f"{sys_prompt_i2v}"},
                     {

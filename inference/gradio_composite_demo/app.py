@@ -1,9 +1,14 @@
 """
 THis is the main file for the gradio web demo. It uses the CogVideoX-5B model to generate videos gradio web demo.
-set environment variable OPENAI_API_KEY to use the OpenAI API to enhance the prompt.
 
-Usage:
-    OpenAI_API_KEY=your_openai_api_key OPENAI_BASE_URL=https://api.openai.com/v1 python inference/gradio_web_demo.py
+The optional prompt enhancement feature uses an LLM to refine your prompt before video generation.
+Set one of the following environment variables to enable it:
+
+  - MINIMAX_API_KEY: Use MiniMax (MiniMax-M2.7) as the LLM provider.
+      MINIMAX_API_KEY=your_minimax_api_key python inference/gradio_composite_demo/app.py
+
+  - OPENAI_API_KEY: Use OpenAI or any OpenAI-compatible provider.
+      OPENAI_API_KEY=your_openai_api_key OPENAI_BASE_URL=https://api.openai.com/v1 python inference/gradio_composite_demo/app.py
 """
 
 import math
@@ -170,10 +175,26 @@ def center_crop_resize(input_video_path, target_width=720, target_height=480):
     return temp_video_path
 
 
+def _get_llm_client():
+    """
+    Return (client, model_name) based on environment variables.
+
+    Priority:
+      1. MINIMAX_API_KEY → MiniMax (OpenAI-compatible, https://api.minimax.io/v1)
+      2. OPENAI_API_KEY  → OpenAI or any OpenAI-compatible provider via OPENAI_BASE_URL
+    """
+    minimax_api_key = os.environ.get("MINIMAX_API_KEY")
+    if minimax_api_key:
+        base_url = os.environ.get("MINIMAX_BASE_URL", "https://api.minimax.io/v1")
+        client = OpenAI(api_key=minimax_api_key, base_url=base_url)
+        return client, "MiniMax-M2.7"
+    return OpenAI(), "glm-4-plus"
+
+
 def convert_prompt(prompt: str, retry_times: int = 3) -> str:
-    if not os.environ.get("OPENAI_API_KEY"):
+    if not os.environ.get("OPENAI_API_KEY") and not os.environ.get("MINIMAX_API_KEY"):
         return prompt
-    client = OpenAI()
+    client, model = _get_llm_client()
     text = prompt.strip()
 
     for i in range(retry_times):
@@ -209,7 +230,7 @@ def convert_prompt(prompt: str, retry_times: int = 3) -> str:
                     "content": f'Create an imaginative video descriptive caption or modify an earlier caption in ENGLISH for the user input: "{text}"',
                 },
             ],
-            model="glm-4-plus",
+            model=model,
             temperature=0.01,
             top_p=0.7,
             stream=False,
