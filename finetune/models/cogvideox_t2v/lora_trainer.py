@@ -7,11 +7,11 @@ from diffusers import (
     CogVideoXPipeline,
     CogVideoXTransformer3DModel,
 )
-from diffusers.models.embeddings import get_3d_rotary_pos_embed
 from PIL import Image
 from transformers import AutoTokenizer, T5EncoderModel
 from typing_extensions import override
 
+from finetune.cogvideox_rope import prepare_cogvideox_rotary_positional_embeddings
 from finetune.schemas import Components
 from finetune.trainer import Trainer
 from finetune.utils import unwrap_model
@@ -203,26 +203,14 @@ class CogVideoXT2VLoraTrainer(Trainer):
         vae_scale_factor_spatial: int,
         device: torch.device,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
-        grid_height = height // (vae_scale_factor_spatial * transformer_config.patch_size)
-        grid_width = width // (vae_scale_factor_spatial * transformer_config.patch_size)
-
-        if transformer_config.patch_size_t is None:
-            base_num_frames = num_frames
-        else:
-            base_num_frames = (
-                num_frames + transformer_config.patch_size_t - 1
-            ) // transformer_config.patch_size_t
-        freqs_cos, freqs_sin = get_3d_rotary_pos_embed(
-            embed_dim=transformer_config.attention_head_dim,
-            crops_coords=None,
-            grid_size=(grid_height, grid_width),
-            temporal_size=base_num_frames,
-            grid_type="slice",
-            max_size=(grid_height, grid_width),
+        return prepare_cogvideox_rotary_positional_embeddings(
+            height=height,
+            width=width,
+            num_frames=num_frames,
+            transformer_config=transformer_config,
+            vae_scale_factor_spatial=vae_scale_factor_spatial,
             device=device,
         )
-
-        return freqs_cos, freqs_sin
 
 
 register("cogvideox-t2v", "lora", CogVideoXT2VLoraTrainer)
