@@ -293,6 +293,11 @@ class Trainer:
             use_deepspeed=use_deepspeed_opt,
         )
 
+        # Scheduler math must use the per-process loader length. Otherwise an
+        # epoch-derived train_steps value is computed before Accelerator shards
+        # the loader and no longer matches the value recalculated after prepare().
+        self.data_loader = self.accelerator.prepare_data_loader(self.data_loader)
+
         num_update_steps_per_epoch = math.ceil(
             len(self.data_loader) / self.args.gradient_accumulation_steps
         )
