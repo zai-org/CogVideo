@@ -67,6 +67,16 @@ def load_images_from_videos(videos_path: List[Path]) -> List[Path]:
     return first_frame_paths
 
 
+def sample_frame_indices(num_frames: int, max_num_frames: int) -> List[int]:
+    if max_num_frames <= 1:
+        return [0]
+    if num_frames <= max_num_frames:
+        return list(range(num_frames))
+    span = num_frames - 1
+    slots = max_num_frames - 1
+    return [(i * span + slots // 2) // slots for i in range(max_num_frames)]
+
+
 ##########  preprocessors  ##########
 
 
@@ -139,7 +149,7 @@ def preprocess_video_with_resize(
         frames = torch.cat([frames, repeated_frames], dim=0)
         return frames.float().permute(0, 3, 1, 2).contiguous()
     else:
-        indices = list(range(0, video_num_frames, video_num_frames // max_num_frames))
+        indices = sample_frame_indices(video_num_frames, max_num_frames)
         frames = video_reader.get_batch(indices)
         frames = frames[:max_num_frames].float()
         frames = frames.permute(0, 3, 1, 2).contiguous()
@@ -182,7 +192,7 @@ def preprocess_video_with_buckets(
         key=lambda bucket: video_num_frames - bucket[0],
         default=1,
     )[0]
-    frame_indices = list(range(0, video_num_frames, video_num_frames // nearest_frame_bucket))
+    frame_indices = sample_frame_indices(video_num_frames, nearest_frame_bucket)
     frames = video_reader.get_batch(frame_indices)
     frames = frames[:nearest_frame_bucket].float()
     frames = frames.permute(0, 3, 1, 2).contiguous()
