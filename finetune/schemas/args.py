@@ -7,6 +7,15 @@ from typing import Any, List, Literal, Tuple
 from pydantic import BaseModel, ValidationInfo, field_validator
 
 
+def parse_bool(value: str) -> bool:
+    normalized = value.lower()
+    if normalized in {"true", "yes", "1"}:
+        return True
+    if normalized in {"false", "no", "0"}:
+        return False
+    raise argparse.ArgumentTypeError("expected a boolean (true or false)")
+
+
 class Args(BaseModel):
     ########## Model ##########
     model_path: Path
@@ -214,14 +223,14 @@ class Args(BaseModel):
 
         # Data loading
         parser.add_argument("--num_workers", type=int, default=8)
-        parser.add_argument("--pin_memory", type=bool, default=True)
+        parser.add_argument("--pin_memory", type=parse_bool, default=True)
         parser.add_argument("--image_column", type=str, default=None)
 
         # Model configuration
         parser.add_argument("--mixed_precision", type=str, default="no")
-        parser.add_argument("--gradient_checkpointing", type=bool, default=True)
-        parser.add_argument("--enable_slicing", type=bool, default=True)
-        parser.add_argument("--enable_tiling", type=bool, default=True)
+        parser.add_argument("--gradient_checkpointing", type=parse_bool, default=True)
+        parser.add_argument("--enable_slicing", type=parse_bool, default=True)
+        parser.add_argument("--enable_tiling", type=parse_bool, default=True)
         parser.add_argument("--nccl_timeout", type=int, default=1800)
 
         # LoRA parameters
